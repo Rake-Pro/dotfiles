@@ -4,7 +4,22 @@
 
 export ZSH="$HOME/.oh-my-zsh"
 ZSH_THEME="agnoster"
-plugins=(git)
+# Order matters for the last three: autosuggestions, then syntax-highlighting,
+# then history-substring-search must load last (its keybindings need highlighting).
+plugins=(
+  git
+  kubectl
+  docker
+  docker-compose
+  sudo
+  z
+  kubectx
+  colored-man-pages
+  command-not-found
+  zsh-autosuggestions
+  zsh-syntax-highlighting
+  history-substring-search
+)
 
 # vendored copy -- never let OMZ phone home or self-update
 DISABLE_AUTO_UPDATE="true"
