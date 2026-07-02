@@ -39,9 +39,26 @@ oh-my-zsh recorded the previous one.
 dotupdate
 ```
 
-Compares the local version stamp to `GET /version`; if newer, pulls the tarball
-and reloads. A once-a-day non-blocking check prints a notice on shell start (never
-auto-applies).
+Pulls the tarball if the server's `/version` is newer than the local stamp, then
+reloads (`exec zsh`). On an interactive shell start, a throttled check offers to
+apply an available update, oh-my-zsh style - behavior is configurable below.
+
+## Configuration
+
+Environment variables (export before `.zshrc` loads them, e.g. in `~/.commonrc`):
+
+| Variable | Default | Effect |
+|----------|---------|--------|
+| `DOTFILES_URL` | set at install | Server base URL. The installer writes it to `~/.config/zsh/.dotfiles_url`. |
+| `DOTFILES_UPDATE_MODE` | `prompt` | `prompt` (ask on shell start), `auto` (apply silently), `notify` (print only), `disabled`. |
+| `DOTFILES_UPDATE_INTERVAL_DAYS` | `1` | Days between startup update checks. `0` = every session. |
+
+Per-host markers (files, not env):
+
+- `touch ~/.config/zsh/.is_k8s` - load `k8s.zsh` (kubectl aliases) on this host.
+- `~/.config/zsh/hosts/<hostname>.zsh` - a fragment sourced only on that host.
+
+See `CHANGELOG.md` for version history and `BACKLOG.md` for parked ideas.
 
 ## Layout
 
@@ -68,7 +85,11 @@ payload/                everything that lands in $HOME
 Dockerfile              distroless static image
 docker-compose.yml      run on homelb
 Makefile                run / build / docker / release
+CHANGELOG.md            version history (Keep a Changelog)
+BACKLOG.md              deferred ideas, not yet started
 ```
+
+Deployed on homelb via GitOps: `Rake-Pro/GitOps-ArgoCD` -> `homelb/dotfiles/`.
 
 ## Server endpoints
 
