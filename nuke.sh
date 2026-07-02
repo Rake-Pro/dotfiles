@@ -147,7 +147,7 @@ fi
 mkdir -p "$BACKUP"
 printf '%s\n' "$REMOVE_LIST" | while IFS= read -r path; do
   [ -e "$path" ] || continue
-  rel="${path#"$HOME"/}"
+  rel="${path#$HOME/}"
   dest_dir="$BACKUP/$(dirname "$rel")"
   mkdir -p "$dest_dir"
   cp -a "$path" "$dest_dir/" 2>/dev/null || cp -R "$path" "$dest_dir/"
