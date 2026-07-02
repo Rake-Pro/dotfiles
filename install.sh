@@ -1,6 +1,8 @@
-#!/bin/sh
+#!/usr/bin/env bash
 # Bootstrap dotfiles from your self-hosted server.  Usage:
-#   curl -fsSL https://dotfiles.example/install | sh
+#   curl -fsSL https://dotfiles.example/install | bash
+# Pipe through bash (not sh): Ubuntu 20.04's dash 0.5.10 mis-parses some
+# constructs, and bash is present on every target host.
 # The server rewrites @@BASE@@ to its own URL before sending this script,
 # so the installed config updates from wherever you fetched it.
 set -eu

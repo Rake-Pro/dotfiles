@@ -9,7 +9,7 @@ dependencies: `zsh`, `curl`, `tar`.
 ## Bootstrap a new host
 
 ```
-curl -fsSL https://dotfiles.example.com/install | sh
+curl -fsSL https://dotfiles.example.com/install | bash
 ```
 
 The server rewrites the script's base URL to its own hostname, so the installed
@@ -23,8 +23,8 @@ installing. `nuke.sh` backs up everything to `~/.dotfiles-nuke-backup-<timestamp
 first, then removes it.
 
 ```
-curl -fsSL https://dotfiles.example.com/nuke | sh        # prompts, then cleans
-curl -fsSL https://dotfiles.example.com/nuke | sh -s -- -n   # dry-run, changes nothing
+curl -fsSL https://dotfiles.example.com/nuke | bash      # prompts, then cleans
+curl -fsSL https://dotfiles.example.com/nuke | bash -s -- -n   # dry-run, changes nothing
 ```
 
 Flags: `-y` (no prompt), `-n` (dry-run), `--purge-history` (also remove
