@@ -24,6 +24,11 @@ case "$(uname -s)" in
   Linux)  [ -f "$ZSH_CONFIG/linux.zsh" ] && source "$ZSH_CONFIG/linux.zsh" ;;
 esac
 
+# personal cross-shell rc (PATH, brew-installed tools, etc.), if present.
+# host-local file, not managed by these dotfiles -- sourced after the OS block so
+# Homebrew shellenv is already on PATH.
+[ -f "$HOME/.commonrc" ] && source "$HOME/.commonrc"
+
 # host-specific fragment, if present for this machine
 _host="$(hostname -s 2>/dev/null || hostname)"
 [ -f "$ZSH_CONFIG/hosts/$_host.zsh" ] && source "$ZSH_CONFIG/hosts/$_host.zsh"
