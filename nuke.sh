@@ -119,8 +119,15 @@ if [ "$DRY_RUN" -eq 1 ]; then
 fi
 
 if [ "$ASSUME_YES" -ne 1 ]; then
-  printf 'Proceed? [y/N] '
-  read -r reply
+  # read from the terminal, not stdin -- so the prompt works under `curl | sh`
+  if [ -r /dev/tty ]; then
+    printf 'Proceed? [y/N] '
+    read -r reply </dev/tty
+  else
+    echo "Non-interactive (piped) with no terminal. Re-run with -y to proceed," >&2
+    echo "or: sh nuke.sh   (after downloading it)." >&2
+    exit 1
+  fi
   case "$reply" in
     y|Y) ;;
     *) echo "Aborted."; exit 0 ;;
