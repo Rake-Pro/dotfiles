@@ -1,0 +1,14 @@
+# Run on homelb:  docker compose up -d
+# Publish behind your existing proxy (NPM / go-proxy-manager) as dotfiles.rake.pro,
+# which terminates TLS and sets X-Forwarded-Proto so /install emits the https URL.
+services:
+  dotfiles:
+    image: ghcr.io/rake-pro/dotfiles:latest
+    # for local builds instead of the GHCR image, comment image: and uncomment:
+    # build: .
+    container_name: dotfiles
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      - LISTEN_ADDR=:8080

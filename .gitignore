@@ -1,0 +1,16 @@
+# build + test artifacts
+/dotfiles-server
+/.smoketest/
+
+# the raw host example used to vendor OMZ (huge, has its own .git); the cleaned
+# copy lives under payload/.oh-my-zsh which IS committed
+/.examples/
+
+# superseded chezmoi scaffold -- kept on disk, not shipped. delete when ready.
+/dot_config/
+/dot_zshrc.tmpl
+/dot_zshenv
+/dot_gitconfig.tmpl
+/.chezmoi.toml.tmpl
+/.chezmoiignore
+/run_once_before_install-packages.sh.tmpl
