@@ -80,6 +80,15 @@ Makefile                run / build / docker / release
 | `/version`         | current version stamp                        |
 | `/`                | health + install hint                        |
 
+## Plugins
+
+All vendored, loaded via `plugins=()` in `.zshrc` (offline, no runtime fetch):
+core oh-my-zsh - `git kubectl docker docker-compose sudo z kubectx
+colored-man-pages command-not-found history-substring-search`; plus externally
+vendored under `custom/plugins/` - `zsh-autosuggestions` (fish-style ghost
+completion) and `zsh-syntax-highlighting` (must load second-to-last;
+history-substring-search loads last so its arrow-key bindings win).
+
 ## Per-host differences
 
 Plain shell in `.zshrc`, keyed on `uname`, `hostname -s`, and marker files:
