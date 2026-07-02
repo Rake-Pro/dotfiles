@@ -119,7 +119,7 @@ func handleRoot(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.Header().Set("Content-Type", "text/plain; charset=utf-8")
-	io.WriteString(w, "dotfiles server "+version()+"\ninstall: curl -fsSL "+baseURL(r)+"/install | sh\n")
+	io.WriteString(w, "dotfiles server "+version()+"\ninstall: curl -fsSL "+baseURL(r)+"/install | bash\n")
 }
 
 func logMW(next http.Handler) http.Handler {

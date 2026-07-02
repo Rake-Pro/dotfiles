@@ -1,5 +1,7 @@
-#!/bin/sh
+#!/usr/bin/env bash
 # nuke.sh -- clean a host of oh-my-zsh and other zsh frameworks/configs that would
+# NOTE: pipe through bash, not sh:  curl -fsSL <base>/nuke | bash
+# (Ubuntu 20.04's dash 0.5.10 mis-parses some constructs; bash is on every host.)
 # conflict with our dotfiles, BEFORE running install. Everything it removes is first
 # copied to a timestamped backup dir, so nothing is destroyed outright.
 #
@@ -148,7 +150,8 @@ mkdir -p "$BACKUP"
 printf '%s\n' "$REMOVE_LIST" | while IFS= read -r path; do
   [ -e "$path" ] || continue
   rel="${path#$HOME/}"
-  dest_dir="$BACKUP/$(dirname "$rel")"
+  dir=$(dirname "$rel")
+  dest_dir="$BACKUP/$dir"
   mkdir -p "$dest_dir"
   cp -a "$path" "$dest_dir/" 2>/dev/null || cp -R "$path" "$dest_dir/"
   rm -rf "$path"
