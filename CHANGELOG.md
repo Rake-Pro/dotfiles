@@ -4,6 +4,23 @@ All notable changes to this project. Format follows [Keep a Changelog]; versioni
 is SemVer. The running version is served at `GET /version` and drives `dotupdate`.
 Dates are YYYY-MM-DD.
 
+## [0.2.1] - 2026-07-10
+### Added
+- `install.sh`: preflight `en_US.UTF-8` locale check (Linux only). Minimized
+  Ubuntu images (e.g. 26.04 server) generate only `C`/`C.UTF-8`, which makes
+  agnoster die with "character not in range" and leaves a bare unthemed prompt.
+  With root/sudo the installer repairs it (`locales` package + `locale-gen` +
+  `update-locale`); otherwise it prints the manual commands. Non-fatal in all
+  paths.
+
+### Fixed
+- `install.sh`: `chsh` now reads from `/dev/tty` instead of the curl pipe, so
+  PAM password auth works under `curl ... | bash`; skipped with a hint when no
+  tty is available.
+- `install.sh`: runs correctly as root on hosts without `sudo` installed; when
+  neither root nor sudo, missing hard deps fail with a clear message instead of
+  `sudo: command not found`.
+
 ## [0.2.0] - 2026-07-02
 ### Added
 - Enabled vendored oh-my-zsh plugins in `.zshrc`: `kubectl`, `docker`,
