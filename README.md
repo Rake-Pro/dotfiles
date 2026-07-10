@@ -14,7 +14,9 @@ curl -fsSL https://dotfiles.rake.pro/install | bash
 
 The server rewrites the script's base URL to its own hostname, so the installed
 config knows where to pull updates from. Missing `zsh`/`curl`/`tar` are installed
-via apt/dnf/brew automatically.
+via apt/dnf/brew automatically. A missing `en_US.UTF-8` locale (common on
+minimized Ubuntu images, and required by the agnoster theme) is detected and
+repaired the same way.
 
 ## Clean a host first (optional)
 
