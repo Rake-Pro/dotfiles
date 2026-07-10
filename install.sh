@@ -20,6 +20,10 @@ if [ "$(id -u)" != "0" ]; then
   fi
 fi
 
+# Fresh images run unattended-upgrades on first boot, which holds the dpkg
+# lock; make apt wait for it instead of failing.
+apt_lock_wait="-o DPkg::Lock::Timeout=120"
+
 # --- dependency check (only the obvious ones) ---
 missing=""
 for dep in zsh curl tar; do
@@ -31,7 +35,7 @@ if [ -n "$missing" ]; then
     echo "no sudo available; install$missing manually as root, then re-run."
     exit 1
   elif command -v apt-get >/dev/null 2>&1; then
-    echo "installing via apt..."; $sudo_cmd apt-get update -qq && $sudo_cmd apt-get install -y $missing
+    echo "installing via apt..."; $sudo_cmd apt-get $apt_lock_wait update -qq && $sudo_cmd apt-get $apt_lock_wait install -y $missing
   elif command -v dnf >/dev/null 2>&1; then
     echo "installing via dnf..."; $sudo_cmd dnf install -y $missing
   elif command -v brew >/dev/null 2>&1; then
@@ -56,7 +60,7 @@ if [ "$(uname -s)" = "Linux" ] && ! locale -a 2>/dev/null | grep -qiE '^en_US\.u
   else
     if ! command -v locale-gen >/dev/null 2>&1; then
       echo "installing locales package..."
-      $sudo_cmd apt-get update -qq && $sudo_cmd apt-get install -y locales || echo "locales install failed; run manually: sudo $fix_locale"
+      $sudo_cmd apt-get $apt_lock_wait update -qq && $sudo_cmd apt-get $apt_lock_wait install -y locales || echo "locales install failed; run manually: sudo $fix_locale"
     fi
     if command -v locale-gen >/dev/null 2>&1; then
       echo "generating en_US.UTF-8 locale..."

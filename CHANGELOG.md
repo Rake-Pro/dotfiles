@@ -4,6 +4,12 @@ All notable changes to this project. Format follows [Keep a Changelog]; versioni
 is SemVer. The running version is served at `GET /version` and drives `dotupdate`.
 Dates are YYYY-MM-DD.
 
+## [0.2.2] - 2026-07-10
+### Fixed
+- `install.sh`: apt-get calls now wait up to 120s for the dpkg lock
+  (`DPkg::Lock::Timeout`) instead of failing when first-boot
+  unattended-upgrades holds it - fresh hosts lost this race every time.
+
 ## [0.2.1] - 2026-07-10
 ### Added
 - `install.sh`: preflight `en_US.UTF-8` locale check (Linux only). Minimized
