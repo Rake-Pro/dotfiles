@@ -6,7 +6,9 @@ import (
 	"embed"
 	"io"
 	"io/fs"
+	"net"
 	"net/http"
+	"net/netip"
 	"os"
 	"strings"
 	"time"
@@ -29,19 +31,99 @@ var versionRaw string
 
 func version() string { return strings.TrimSpace(versionRaw) }
 
-// baseURL reconstructs the public URL the client used, honoring a reverse proxy.
+// defaultPublicBaseURL is the canonical public URL the server is served at.
+// It is the fallback when PUBLIC_BASE_URL is unset and the source of BASE for
+// every request whose direct peer is not a configured trusted proxy.
+const defaultPublicBaseURL = "https://dotfiles.example.com"
+
+// publicBaseURL is the fixed configured canonical base URL embedded into the
+// install script. Set from PUBLIC_BASE_URL at startup.
+var publicBaseURL = defaultPublicBaseURL
+
+// trustedProxies are the networks whose forwarded headers we honor. Only when a
+// request's direct peer (RemoteAddr) falls inside one of these do we reconstruct
+// BASE from client-controlled X-Forwarded-* headers. Empty means never trust
+// forwarded headers. Set from TRUSTED_PROXY_CIDRS at startup.
+var trustedProxies []netip.Prefix
+
+// baseURL returns the canonical public base URL used to build the install
+// script and tarball URL. It defaults to the fixed configured publicBaseURL and
+// only honors client-supplied X-Forwarded-* / Host when the direct peer is a
+// configured trusted proxy. This closes the host-header poisoning -> RCE path:
+// an untrusted client reaching the server directly (or through a Host-blind
+// cache) can never steer BASE at an attacker-controlled tarball host.
 func baseURL(r *http.Request) string {
-	scheme := "http"
+	if !peerTrusted(r.RemoteAddr) {
+		return publicBaseURL
+	}
+	scheme := "https"
 	if proto := r.Header.Get("X-Forwarded-Proto"); proto != "" {
 		scheme = proto
-	} else if r.TLS != nil {
-		scheme = "https"
+	} else if r.TLS == nil {
+		scheme = "http"
 	}
 	host := r.Host
 	if fwd := r.Header.Get("X-Forwarded-Host"); fwd != "" {
 		host = fwd
 	}
+	if host == "" {
+		return publicBaseURL
+	}
 	return scheme + "://" + host
+}
+
+// peerTrusted reports whether the request's direct peer (RemoteAddr) is within
+// one of the configured trusted-proxy CIDRs.
+func peerTrusted(remoteAddr string) bool {
+	if len(trustedProxies) == 0 {
+		return false
+	}
+	a := parseAddr(remoteAddr)
+	if !a.IsValid() {
+		return false
+	}
+	for _, p := range trustedProxies {
+		if p.Contains(a) {
+			return true
+		}
+	}
+	return false
+}
+
+// parseAddr extracts a netip.Addr from a "host:port" RemoteAddr or a bare
+// address. Zones and surrounding spaces are stripped; the result is unmapped.
+func parseAddr(s string) netip.Addr {
+	s = strings.TrimSpace(s)
+	if host, _, err := net.SplitHostPort(s); err == nil {
+		s = host
+	}
+	if i := strings.IndexByte(s, '%'); i >= 0 {
+		s = s[:i]
+	}
+	a, err := netip.ParseAddr(s)
+	if err != nil {
+		return netip.Addr{}
+	}
+	return a.Unmap()
+}
+
+// parseTrustedProxies parses a comma-separated list of CIDRs into masked
+// prefixes. Invalid entries are logged and skipped.
+func parseTrustedProxies(csv string) []netip.Prefix {
+	var out []netip.Prefix
+	for _, c := range strings.Split(csv, ",") {
+		c = strings.TrimSpace(c)
+		if c == "" {
+			continue
+		}
+		p, err := netip.ParsePrefix(c)
+		if err != nil {
+			log.Warn().Str("cidr", c).Err(err).Msg("ignoring invalid TRUSTED_PROXY_CIDRS entry")
+			continue
+		}
+		out = append(out, p.Masked())
+	}
+	return out
 }
 
 func handleInstall(w http.ResponseWriter, r *http.Request) {
@@ -140,6 +222,11 @@ func main() {
 		addr = ":8080"
 	}
 
+	if v := strings.TrimSpace(os.Getenv("PUBLIC_BASE_URL")); v != "" {
+		publicBaseURL = strings.TrimRight(v, "/")
+	}
+	trustedProxies = parseTrustedProxies(os.Getenv("TRUSTED_PROXY_CIDRS"))
+
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", handleRoot)
 	mux.HandleFunc("/install", handleInstall)
@@ -147,7 +234,9 @@ func main() {
 	mux.HandleFunc("/version", handleVersion)
 	mux.HandleFunc("/dotfiles.tar.gz", handleTarball)
 
-	log.Info().Str("addr", addr).Str("version", version()).Msg("dotfiles server starting")
+	log.Info().Str("addr", addr).Str("version", version()).
+		Str("base_url", publicBaseURL).Int("trusted_proxies", len(trustedProxies)).
+		Msg("dotfiles server starting")
 	srv := &http.Server{
 		Addr:              addr,
 		Handler:           logMW(mux),
