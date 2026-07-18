@@ -4,6 +4,8 @@ on:
   push:
     branches: [master, main]
     tags: ['v*']
+  pull_request:
+    branches: [master]
   workflow_dispatch:
 
 env:
@@ -49,8 +51,8 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: .
-          platforms: linux/amd64,linux/arm64
-          push: true
+          platforms: ${{ github.event_name == 'pull_request' && 'linux/amd64' || 'linux/amd64,linux/arm64' }}
+          push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
@@ -59,6 +61,7 @@ jobs:
   trivy:
     needs: build-and-push
     runs-on: ubuntu-latest
+    if: github.event_name != 'pull_request'
     permissions:
       contents: read
       packages: read
