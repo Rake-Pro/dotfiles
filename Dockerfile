@@ -10,7 +10,7 @@ RUN go mod tidy && \
     go build -trimpath -ldflags='-s -w' -o /dotfiles-server .
 
 # --- runtime (distroless static: no shell, no package manager) ---
-FROM gcr.io/distroless/static-debian12:nonroot
+FROM gcr.io/distroless/static-debian13:nonroot
 COPY --from=build /dotfiles-server /dotfiles-server
 EXPOSE 8080
 USER nonroot:nonroot
