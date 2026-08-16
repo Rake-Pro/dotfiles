@@ -1,5 +1,5 @@
 # --- build (cross-compiles natively for the target arch, no QEMU) ---
-FROM --platform=$BUILDPLATFORM golang:1.26-alpine AS build
+FROM --platform=$BUILDPLATFORM golang:1.27rc2-alpine AS build
 ARG TARGETOS TARGETARCH
 WORKDIR /src
 COPY go.mod go.sum* ./
