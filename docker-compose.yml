@@ -1,5 +1,5 @@
-# Run on docker-host:  docker compose up -d
-# Publish behind your existing proxy (NPM / reverse-proxy) as dotfiles.example.com,
+# Run:  docker compose up -d
+# Publish behind your existing reverse proxy as dotfiles.example.com,
 # which terminates TLS and sets X-Forwarded-Proto so /install emits the https URL.
 services:
   dotfiles:
@@ -12,3 +12,5 @@ services:
       - "8080:8080"
     environment:
       - LISTEN_ADDR=:8080
+      # Set to the URL your proxy serves this at; it is baked into /install output.
+      - PUBLIC_BASE_URL=https://dotfiles.example.com

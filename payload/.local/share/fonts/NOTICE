@@ -1,0 +1,11 @@
+MesloLGS NF (Regular, Bold, Italic, Bold Italic)
+
+These fonts are the patched MesloLGS NF family distributed by the
+powerlevel10k project (https://github.com/romkatv/powerlevel10k-media),
+derived from Meslo LG by Andre Berg (https://github.com/andreberg/Meslo-Font),
+itself derived from Apple's Menlo font (which derives from Bitstream Vera Sans
+Mono / DejaVu Sans Mono), with Nerd Fonts / Powerline glyphs added.
+
+Meslo LG and the MesloLGS NF derivatives are licensed under the Apache
+License, Version 2.0. See the LICENSE file in this directory for the full
+license text.

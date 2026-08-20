@@ -85,13 +85,13 @@ payload/                everything that lands in $HOME
     prompt.zsh          UNUSED fallback: hand-rolled prompt for a no-OMZ host
     completion.zsh      UNUSED fallback: zsh builtin compinit
 Dockerfile              distroless static image
-docker-compose.yml      run on docker-host
+docker-compose.yml      run on your docker host
 Makefile                run / build / docker / release
 CHANGELOG.md            version history (Keep a Changelog)
 BACKLOG.md              deferred ideas, not yet started
 ```
 
-Deployed on docker-host via GitOps: `Rake-Pro/ops-repo` -> `docker-host/dotfiles/`.
+Deployed via GitOps (Argo CD) from a private ops repo.
 
 ## Server endpoints
 
@@ -118,18 +118,29 @@ Plain shell in `.zshrc`, keyed on `uname`, `hostname -s`, and marker files:
 
 - OS: `macos.zsh` / `linux.zsh` by `uname`.
 - Host: drop a `hosts/<hostname>.zsh` fragment for machine-specific config.
-- Role: `touch ~/.config/zsh/.is_k8s` on cluster nodes / docker-host to load `k8s.zsh`.
+- Role: `touch ~/.config/zsh/.is_k8s` on cluster nodes / docker hosts to load `k8s.zsh`.
 
 ## Deploy
 
-Local (docker-host): `docker compose up -d`, publish behind your proxy as
+Local: `docker compose up -d`, publish behind your proxy as
 `dotfiles.example.com` (proxy sets `X-Forwarded-Proto: https` so `/install` emits the
 https URL). Release a new version: bump `VERSION`, `make release` (builds + pushes
 to GHCR); the cluster/GitOps flow can consume the same image later.
 
 ## Provenance
 
-`k8s.zsh` carries the kubectl aliases from the abandoned 2021 `Rake-Pro/old-dotfiles-repo`
+`k8s.zsh` carries the kubectl aliases from an abandoned 2021 internal dotfiles
 repo, with the debug image off EOL Ubuntu Focal, an alias typo fixed, and the
 third-party `complete-alias` completion replaced by zsh-native `kubectl completion
 zsh` + `compdef`.
+
+## Licenses
+
+This repo's own code is MIT (see `LICENSE`). Vendored third-party content keeps
+its own license alongside it:
+
+- oh-my-zsh (incl. the agnoster theme) - MIT, `payload/.oh-my-zsh/LICENSE.txt`
+- zsh-autosuggestions - MIT, `payload/.oh-my-zsh/custom/plugins/zsh-autosuggestions/LICENSE`
+- zsh-syntax-highlighting - BSD-3-Clause, `payload/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting/LICENSE`
+- MesloLGS NF fonts (from romkatv/powerlevel10k-media, derived from Meslo LG) -
+  Apache-2.0, `payload/.local/share/fonts/LICENSE` + `NOTICE`

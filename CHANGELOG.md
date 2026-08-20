@@ -87,6 +87,6 @@ Dates are YYYY-MM-DD.
   cleanup of conflicting zsh frameworks), `dotupdate` self-update. Per-host/OS/k8s
   behavior via plain-shell fragments and marker files.
 - Multi-arch (amd64/arm64) GHCR build via GitHub Actions; `docker-compose.yml`
-  for docker-host; distroless static image.
+  for the docker host; distroless static image.
 
 [Keep a Changelog]: https://keepachangelog.com/
