@@ -1,6 +1,7 @@
 # Run:  docker compose up -d
 # Publish behind your existing reverse proxy as dotfiles.example.com,
-# which terminates TLS and sets X-Forwarded-Proto so /install emits the https URL.
+# which terminates TLS; /install emits PUBLIC_BASE_URL (forwarded headers are only
+# honored from peers listed in TRUSTED_PROXY_CIDRS).
 services:
   dotfiles:
     image: ghcr.io/rake-pro/dotfiles:latest

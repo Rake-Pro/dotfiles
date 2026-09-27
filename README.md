@@ -43,9 +43,11 @@ dotupdate
 
 Pulls the tarball if the server's `/version` is newer than the local stamp, then
 reloads (`exec zsh`). On an interactive shell start, a throttled check offers to
-apply an available update, oh-my-zsh style - behavior is configurable below.
+apply an available update, oh-my-zsh style; behavior is configurable below.
 
 ## Configuration
+
+### Client (installed host)
 
 Environment variables (export before `.zshrc` loads them, e.g. in `~/.commonrc`):
 
@@ -57,8 +59,18 @@ Environment variables (export before `.zshrc` loads them, e.g. in `~/.commonrc`)
 
 Per-host markers (files, not env):
 
-- `touch ~/.config/zsh/.is_k8s` - load `k8s.zsh` (kubectl aliases) on this host.
-- `~/.config/zsh/hosts/<hostname>.zsh` - a fragment sourced only on that host.
+- `touch ~/.config/zsh/.is_k8s`: load `k8s.zsh` (kubectl aliases) on this host.
+- `~/.config/zsh/hosts/<hostname>.zsh`: a fragment sourced only on that host.
+
+### Server (container)
+
+Environment variables for the `dotfiles` server binary/container:
+
+| Variable | Default | Effect |
+|----------|---------|--------|
+| `LISTEN_ADDR` | `:8080` | Address the HTTP server binds to. |
+| `PUBLIC_BASE_URL` | `https://dotfiles.example.com` | Fixed canonical base URL baked into `/install`'s `@@BASE@@` and reported by `/`. Set this to your real hostname. |
+| `TRUSTED_PROXY_CIDRS` | (none) | Comma-separated CIDR list. Only when the direct peer's address falls inside one of these is `X-Forwarded-Proto`/`X-Forwarded-Host` honored to reconstruct the base URL per-request; otherwise `PUBLIC_BASE_URL` is always used as-is. Empty means forwarded headers are never trusted. |
 
 See `CHANGELOG.md` for version history and `BACKLOG.md` for parked ideas.
 
@@ -91,8 +103,6 @@ CHANGELOG.md            version history (Keep a Changelog)
 BACKLOG.md              deferred ideas, not yet started
 ```
 
-Deployed via GitOps (Argo CD) from a private ops repo.
-
 ## Server endpoints
 
 | Route              | Purpose                                      |
@@ -106,9 +116,9 @@ Deployed via GitOps (Argo CD) from a private ops repo.
 ## Plugins
 
 All vendored, loaded via `plugins=()` in `.zshrc` (offline, no runtime fetch):
-core oh-my-zsh - `git kubectl docker docker-compose sudo z kubectx
+core oh-my-zsh: `git kubectl docker docker-compose sudo z kubectx
 colored-man-pages command-not-found history-substring-search`; plus externally
-vendored under `custom/plugins/` - `zsh-autosuggestions` (fish-style ghost
+vendored under `custom/plugins/`: `zsh-autosuggestions` (fish-style ghost
 completion) and `zsh-syntax-highlighting` (must load second-to-last;
 history-substring-search loads last so its arrow-key bindings win).
 
@@ -123,9 +133,13 @@ Plain shell in `.zshrc`, keyed on `uname`, `hostname -s`, and marker files:
 ## Deploy
 
 Local: `docker compose up -d`, publish behind your proxy as
-`dotfiles.example.com` (proxy sets `X-Forwarded-Proto: https` so `/install` emits the
-https URL). Release a new version: bump `VERSION`, `make release` (builds + pushes
-to GHCR); the cluster/GitOps flow can consume the same image later.
+`dotfiles.example.com`. Set `PUBLIC_BASE_URL` to that hostname so `/install`
+emits the right URL; `docker-compose.yml` shows both `LISTEN_ADDR` and
+`PUBLIC_BASE_URL` set for you to edit. `TRUSTED_PROXY_CIDRS` is only needed if
+you want the base URL derived per-request from forwarded headers instead of
+the fixed `PUBLIC_BASE_URL`. Release a new version: bump `VERSION`, `make
+release` (builds + pushes to GHCR); the cluster/GitOps flow can consume the
+same image later.
 
 ## Provenance
 
@@ -139,8 +153,8 @@ zsh` + `compdef`.
 This repo's own code is MIT (see `LICENSE`). Vendored third-party content keeps
 its own license alongside it:
 
-- oh-my-zsh (incl. the agnoster theme) - MIT, `payload/.oh-my-zsh/LICENSE.txt`
-- zsh-autosuggestions - MIT, `payload/.oh-my-zsh/custom/plugins/zsh-autosuggestions/LICENSE`
-- zsh-syntax-highlighting - BSD-3-Clause, `payload/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting/LICENSE`
+- oh-my-zsh (incl. the agnoster theme): MIT, `payload/.oh-my-zsh/LICENSE.txt`
+- zsh-autosuggestions: MIT, `payload/.oh-my-zsh/custom/plugins/zsh-autosuggestions/LICENSE`
+- zsh-syntax-highlighting: BSD-3-Clause, `payload/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting/LICENSE`
 - MesloLGS NF fonts (from romkatv/powerlevel10k-media, derived from Meslo LG) -
   Apache-2.0, `payload/.local/share/fonts/LICENSE` + `NOTICE`

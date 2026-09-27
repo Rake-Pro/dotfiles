@@ -8,7 +8,7 @@ Dates are YYYY-MM-DD.
 ### Fixed
 - `install.sh`: apt-get calls now wait up to 120s for the dpkg lock
   (`DPkg::Lock::Timeout`) instead of failing when first-boot
-  unattended-upgrades holds it - fresh hosts lost this race every time.
+  unattended-upgrades holds it: fresh hosts lost this race every time.
 
 ## [0.2.1] - 2026-07-10
 ### Added
@@ -31,7 +31,7 @@ Dates are YYYY-MM-DD.
 ### Added
 - Enabled vendored oh-my-zsh plugins in `.zshrc`: `kubectl`, `docker`,
   `docker-compose`, `sudo` (ESC ESC), `z`, `kubectx`, `colored-man-pages`,
-  `command-not-found`, `history-substring-search`. All already in the payload -
+  `command-not-found`, `history-substring-search`. All already in the payload,
   no new fetch.
 - Vendored `zsh-autosuggestions` and `zsh-syntax-highlighting` into
   `payload/.oh-my-zsh/custom/plugins/` (offline; `.git` and test-data trimmed).
@@ -81,7 +81,7 @@ Dates are YYYY-MM-DD.
 - Initial self-hosted dotfiles. Go HTTP server (`main.go`) embeds `payload/` via
   `go:embed` and serves `/install`, `/nuke`, `/version`, `/dotfiles.tar.gz`, `/`.
   Base URL injected from the request host (honors `X-Forwarded-Proto`).
-- Vendored oh-my-zsh + agnoster theme + MesloLGS NF fonts - fully offline; client
+- Vendored oh-my-zsh + agnoster theme + MesloLGS NF fonts, fully offline; client
   deps are only `zsh`, `curl`, `tar`.
 - `install.sh` (curl bootstrap + dep/font install), `nuke.sh` (backup-first
   cleanup of conflicting zsh frameworks), `dotupdate` self-update. Per-host/OS/k8s

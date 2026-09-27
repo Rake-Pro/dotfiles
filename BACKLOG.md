@@ -19,6 +19,6 @@ Status: parked at user's request (not exploring yet).
 
 ## Other parked items
 - Delete the gitignored, superseded chezmoi scaffold files from disk.
-- Decide zerolog vs stdlib slog for the server (cosmetic; no functional impact).
+- [Done] Decide zerolog vs stdlib slog for the server: zerolog is in use (`main.go`).
 - Optional adds discussed but not chosen: kube-ps1 in prompt, fzf fuzzy finder,
   managed .gitconfig / .gitignore_global / .vimrc / .tmux.conf.

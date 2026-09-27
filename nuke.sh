@@ -6,14 +6,14 @@
 # copied to a timestamped backup dir, so nothing is destroyed outright.
 #
 # Usage:
-#   sh nuke.sh                 # show what would be removed, then confirm
-#   sh nuke.sh -y              # no prompt (for automation)
-#   sh nuke.sh -n              # dry-run: print, touch nothing
-#   sh nuke.sh --purge-history # also remove ~/.zsh_history (kept by default)
-#   sh nuke.sh --purge-fonts   # also remove vendored MesloLGS NF fonts
+#   bash nuke.sh                 # show what would be removed, then confirm
+#   bash nuke.sh -y              # no prompt (for automation)
+#   bash nuke.sh -n              # dry-run: print, touch nothing
+#   bash nuke.sh --purge-history # also remove ~/.zsh_history (kept by default)
+#   bash nuke.sh --purge-fonts   # also remove vendored MesloLGS NF fonts
 #
 # Served by the dotfiles container at /nuke, so on a host you can:
-#   curl -fsSL https://dotfiles.example.com/nuke | sh
+#   curl -fsSL https://dotfiles.example.com/nuke | bash
 set -eu
 
 ASSUME_YES=0
@@ -121,13 +121,13 @@ if [ "$DRY_RUN" -eq 1 ]; then
 fi
 
 if [ "$ASSUME_YES" -ne 1 ]; then
-  # read from the terminal, not stdin -- so the prompt works under `curl | sh`
+  # read from the terminal, not stdin -- so the prompt works under `curl | bash`
   if [ -r /dev/tty ]; then
     printf 'Proceed? [y/N] '
     read -r reply </dev/tty
   else
     echo "Non-interactive (piped) with no terminal. Re-run with -y to proceed," >&2
-    echo "or: sh nuke.sh   (after downloading it)." >&2
+    echo "or: bash nuke.sh   (after downloading it)." >&2
     exit 1
   fi
   case "$reply" in
