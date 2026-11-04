@@ -2,6 +2,10 @@ module github.com/Rake-Pro/dotfiles
 
 go 1.27.3
 
+// No Multipath TCP listeners: nothing on the fleet dials MPTCP, and a listening
+// MPTCP socket was the precondition of the CVE-2026-98432 host-kernel exploit.
+godebug multipathtcp=0
+
 require github.com/rs/zerolog v1.35.1
 
 require (
